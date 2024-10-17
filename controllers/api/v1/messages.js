@@ -97,5 +97,5 @@ module.exports = {
   getMessageByID,
   createMessage,
   updateMessage,
-  deleteMessage,
+  deleteMessage
 };
