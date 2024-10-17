@@ -7,9 +7,17 @@ const logger = require('morgan');
 // Define routes
 const apiMessagesRouter = require('./routes/api/v1/messages');
 
-// Add mongoose
+// Import mongoose
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/03-challenge');
+// Import config
+const config = require('config');
+// Import CORS
+const cors = require('cors');
+
+// Connect to MongoDB
+const connection = config.get('mongodb');
+console.log(`Connecting to MongoDB: ${connection}`);
+mongoose.connect(connection);
 
 const app = express();
 
