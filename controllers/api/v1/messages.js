@@ -1,21 +1,19 @@
-// Include mongoose
-const mongoose = require('mongoose');
-
-// Define schema
-const Schema = mongoose.Schema;
-
-// Define a new schema
-const messageSchema = new Schema({
-  text: String,
-  user: String,
-});
-
-const Message = mongoose.model('Message', messageSchema);
+// Import model
+const Message = require('./../../../models/api/v1/Message');
 
 // Define functions
 const getAllMessages = async (req, res) => {
   try {
-    const messages = await Message.find({ "user": "John" });
+    let usernameFilter = {};
+
+    if (req.query.username) {
+      console.log('Username found: ' + req.query.username);
+      usernameFilter.user = req.query.username;
+    } else {
+      console.log('No username found');
+    }
+
+    const messages = await Message.find(usernameFilter);
     res.json({
       "status": "success",
       "message": "GETTING messages",
@@ -28,11 +26,26 @@ const getAllMessages = async (req, res) => {
   }
 };
 
+const getMessageByID = async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.id);
+    res.json({
+      "status": "success",
+      "message": "GETTING message " + req.params.id,
+      "data": {
+        "message": message
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
 const createMessage = async (req, res) => {
   try {
     let message = new Message();
-    message.text = "Hi, I'm John";
-    message.user = "John";
+    message.text = req.body.text;
+    message.user = req.body.user;
   
     const savedMessage = await message.save();
     res.json({
@@ -48,8 +61,41 @@ const createMessage = async (req, res) => {
   }
 };
 
+const updateMessage = async (req, res) => {
+  try {
+    const message = await Message.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({
+      "status": "success",
+      "message": "Message updated",
+      "data": {
+        "message": message
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
+const deleteMessage = async (req, res) => {
+  try {
+    const message = await Message.findByIdAndDelete(req.params.id);
+    res.json({
+      "status": "success",
+      "message": "Message deleted",
+      "data": {
+        "message": message
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
 // Export functions
 module.exports = {
   getAllMessages,
-  createMessage
+  getMessageByID,
+  createMessage,
+  updateMessage,
+  deleteMessage,
 };
