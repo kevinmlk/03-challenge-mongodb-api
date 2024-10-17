@@ -1,5 +1,5 @@
 // Import model
-const Message = require('./../../../models/api/v1/Message');
+const Message = require('../../../models/api/v1/Message');
 
 // Define functions
 const getAllMessages = async (req, res) => {
